@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Adding Application</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap.bundle.js}"></script>
+</head>
+<body data-bs-theme="dark">
+<div class="container p-3" th:insert="navbar.html"></div>
+<div class="container p-5">
+    <form action="/addApp" method="post">
+        <div class="mb-3">
+            <label for="input" class="form-label">Full Name: </label>
+            <input type="text" class="form-control" id="input" name="name" placeholder="Full Name:">
+        </div>
+        <div class="mb-3">
+            <div class="form-floating">
+                <select name="courseId" class="form-select" aria-label="Floating label select example">
+                    <option th:value="${course.getId()}" th:each="course:${courses}" th:text="${course.getName()}">Java</option>
+                </select>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="input2" class="form-label">Phone Number: </label>
+            <input type="tel" class="form-control" id="input2" name="number" placeholder="Phone Number:">
+        </div>
+        <div class="mb-3">
+            <label for="input3" class="form-label">Comment: </label>
+            <textarea class="form-control" id="input3" name="comment" placeholder="Comment:">
+
+            </textarea>
+        </div>
+        <button class="btn btn-light" type="submit">ADD APPLICATION</button>
+    </form>
+</div>
+</body>
+</html>

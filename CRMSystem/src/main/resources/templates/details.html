@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Details</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.rtl.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap-grid.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap-reboot.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap-utilities.css}">
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap.bundle.js}"></script>
+</head>
+
+<body data-bs-theme="dark">
+<div class="container p-3" th:insert="navbar.html"></div>
+
+<!-- Check for null 'request' object -->
+<div class="container pt-5 text-center" th:if="${request != null && not request.handled}" style="color: #ff4517;">
+    *NEW, NOT HANDLED*
+</div>
+
+<div class="container">
+        <!-- Check for null 'request' object before accessing properties -->
+        <div th:if="${request != null}" class="mb-3">
+            <label for="input" class="form-label">Full Name: </label>
+            <input type="text" readonly class="form-control" id="input" name="name" th:value="${request.getUserName()}" placeholder="Full Name:">
+        </div>
+
+        <!-- Check for null 'request' object before accessing properties -->
+        <div th:if="${request != null}" class="mb-3">
+            <div class="form-floating">
+                <select name="course" class="form-select" aria-label="Floating label select example" th:readonly="true">
+                    <option th:value="${request.getCourseId().getName()}" th:text="${request.getCourseId().getName()}" selected="selected"></option>
+                </select>
+            </div>
+        </div>
+        <div th:if="${request != null}" class="mb-3">
+            <label for="input2" class="form-label">Phone Number: </label>
+            <input type="tel" class="form-control" readonly id="input2" name="number" th:value="${request.getPhone()}" placeholder="Phone Number:">
+        </div>
+        <div th:if="${request != null}" class="mb-3">
+            <label for="input3" class="form-label">Comment: </label>
+            <textarea class="form-control" id="input3" readonly th:text="${request.getCommentary()}" name="comment" placeholder="Comment:"></textarea>
+        </div>
+    <th:block th:if="${request.handled}">
+        <!-- Add Operators Button -->
+        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addOperatorModal">
+            ADD OPERATORS
+        </button>
+    </th:block>
+    <th:block th:unless="${request.handled}">
+        <!-- Process Application Button -->
+        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addOperatorModal">
+            Process Application
+        </button>
+    </th:block>
+    <div class="modal fade" id="addOperatorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Choose operators:</h1>
+                    <button type="button" class="btn-close pe-xxl-5" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- ... (your existing code) ... -->
+
+                <div class="modal-body">
+                    <form method="post" th:action="@{'/processApp/' + ${request.id}}">
+                        <!-- Add Request ID as a Hidden Field -->
+                        <input type="hidden" class="form-control" th:value="${request.id}" name="id">
+
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">Choose</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Surname</th>
+                                <th scope="col">Department</th>
+                            </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                            <tr th:each="operator : ${operators}">
+                                <td>
+                                    <!-- Checkbox for each operator -->
+                                    <input type="checkbox" class="form-check-input" th:id="'operatorCheckbox_' + ${operator.id}" th:name="operatorIds" th:value="${operator.id}" th:checked="${request.operators != null and request.operators.contains(operator)}">
+                                </td>
+                                <td th:text="${operator.name}"></td>
+                                <td th:text="${operator.surname}"></td>
+                                <td th:text="${operator.department}"></td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ... (your existing code) ... -->
+
+            </div>
+        </div>
+    </div>
+
+
+    <a class="btn btn-light" th:href="@{'/removeApp/'+${request.getId()}}">REMOVE APPLICATION</a>
+</div>
+<div class="container">
+    <p class="text-center">OPERATORS:</p>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Remove</th>
+            <th scope="col">Name</th>
+            <th scope="col">Surname</th>
+            <th scope="col">Department</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="operator : ${request.operators}">
+            <td>
+                <form method="post" th:action="@{'/removeOperator/' + ${request.id}}">
+                    <!-- Add Operator ID as a Hidden Field -->
+                    <input type="hidden" class="form-control" th:value="${operator.id}" name="operatorId">
+                    <!-- Add a Remove Operator Button -->
+                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                </form>
+            </td>
+            <td th:text="${operator.name}"></td>
+            <td th:text="${operator.surname}"></td>
+            <td th:text="${operator.department}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
